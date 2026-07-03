@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <base href="./">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星环烹云销售 AI 助手 · 服务场景总入口</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../shared/css/styles.css">
+  <style>
+    :root {
+      --page-bg: #F0F2F5;
+      --surface: #FFFFFF;
+      --surface-soft: #F7F8FA;
+      --border: #E2E5EB;
+      --border-strong: #CBD0D8;
+      --text: #111827;
+      --muted: #6B7280;
+      --brand: #2563EB;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    button { font: inherit; }
+
+    .hub-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      background: var(--page-bg);
+    }
+
+    .hub-nav {
+      height: 58px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: minmax(220px, .72fr) minmax(360px, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .brand-copy { min-width: 0; }
+
+    .brand-copy h1 {
+      margin: 0;
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-copy p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .meta-pill {
+      height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .meta-pill i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .current-scene {
+      min-width: 0;
+      height: 38px;
+      padding: 0 12px;
+      border-left: 3px solid var(--current-color, var(--brand));
+      border-radius: 8px;
+      background: var(--surface-soft);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .current-scene-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--current-color, var(--brand)) 12%, #fff);
+      color: var(--current-color, var(--brand));
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .current-scene-icon i {
+      width: 15px;
+      height: 15px;
+    }
+
+    .current-scene-copy {
+      min-width: 0;
+    }
+
+    .current-scene-copy b {
+      display: block;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .current-scene-copy span {
+      display: block;
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .viewer-shell {
+      min-height: 0;
+      padding: 10px 24px 20px;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    .frame-wrap {
+      min-height: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    @media (max-width: 980px) {
+      body { overflow: auto; }
+      .hub-page { min-height: 100vh; }
+      .hub-nav {
+        height: auto;
+        padding: 12px;
+        align-items: flex-start;
+        grid-template-columns: 1fr;
+      }
+      .nav-meta {
+        width: 100%;
+        overflow-x: auto;
+      }
+      .viewer-shell {
+        min-height: 720px;
+        padding: 10px 12px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hub-page">
+    <nav class="hub-nav">
+      <div class="brand-lockup">
+        <div class="brand-mark">NC</div>
+        <div class="brand-copy">
+          <h1>星环烹云销售 AI 助手</h1>
+          <p>企微服务场景 Demo</p>
+        </div>
+      </div>
+      <div class="current-scene" id="currentSceneSummary">
+        <span class="current-scene-icon"><i data-lucide="message-square-text"></i></span>
+        <span class="current-scene-copy">
+          <b id="currentSceneTitle">服务场景总入口</b>
+          <span id="currentSceneDesc">通过下方业务阶段导航切换五个 Demo 场景</span>
+        </span>
+      </div>
+      <div class="nav-meta">
+        <span class="meta-pill"><i data-lucide="layout-dashboard"></i>统一入口</span>
+        <span class="meta-pill"><i data-lucide="message-square-text"></i>企微场景</span>
+        <span class="meta-pill"><i data-lucide="workflow"></i>OA / 工单 / CRM</span>
+      </div>
+    </nav>
+
+    <section class="viewer-shell">
+      <div class="frame-wrap">
+        <iframe id="sceneFrame" title="星环烹云销售 AI 助手服务场景 Demo"></iframe>
+      </div>
+    </section>
+  </div>
+
+  <script src="../scene-11-sales-assistant/shared/js/lucide.min.js"></script>
+  <script>
+    const scenes = [
+      {
+        id: 'visit',
+        title: '售前：参观接待 / 试菜群',
+        desc: '销售邀约、展厅导航、试菜照片和客户评价',
+        color: '#8B5CF6',
+        icon: 'chef-hat',
+        url: '../scene-13-service-ai/index.html?scenario=visit-tasting&embed=1'
+      },
+      {
+        id: 'delivery',
+        title: '售后：已成交未安装',
+        desc: '发货、物流、现场环境、安装和培训',
+        color: '#2563EB',
+        icon: 'truck',
+        url: '../scene-14-delivery-install-training/index.html?embed=1'
+      },
+      {
+        id: 'warranty',
+        title: '售后：成交客户质保期内',
+        desc: '多群浮现、保内报修、派工和闭环',
+        color: '#10B981',
+        icon: 'shield-check',
+        url: '../scene-15-warranty-service/index.html?embed=1'
+      },
+      {
+        id: 'outWarranty',
+        title: '售后：质保期外 / 过保',
+        desc: '过保群监控、费用协商和商城配件',
+        color: '#F59E0B',
+        icon: 'radar',
+        url: '../scene-16-out-of-warranty-service/index.html?embed=1'
+      },
+      {
+        id: 'sales',
+        title: '销售：销售过程',
+        desc: '询价承接、需求追问、方案推荐、异议处理和试菜推进',
+        color: '#EC4899',
+        icon: 'line-chart',
+        url: '../scene-17-sales-process/index.html?embed=1'
+      }
+    ];
+
+    const frame = document.getElementById('sceneFrame');
+    const currentSceneSummary = document.getElementById('currentSceneSummary');
+    const currentSceneTitle = document.getElementById('currentSceneTitle');
+    const currentSceneDesc = document.getElementById('currentSceneDesc');
+    let activeId = new URLSearchParams(location.search).get('scene') || 'visit';
+
+    function selectScene(id) {
+      const scene = scenes.find(item => item.id === id) || scenes[0];
+      activeId = scene.id;
+      frame.src = scene.url;
+      updateCurrentScene(scene);
+    }
+
+    function updateCurrentScene(scene) {
+      currentSceneSummary.style.setProperty('--current-color', scene.color);
+      currentSceneSummary.querySelector('.current-scene-icon').innerHTML = '<i data-lucide="' + scene.icon + '"></i>';
+      currentSceneTitle.textContent = scene.title;
+      currentSceneDesc.textContent = scene.desc;
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function matchSceneFromUrl(url) {
+      if (url.includes('scene-13-service-ai')) return scenes[0];
+      if (url.includes('scene-14-delivery-install-training')) return scenes[1];
+      if (url.includes('scene-15-warranty-service')) return scenes[2];
+      if (url.includes('scene-16-out-of-warranty-service')) return scenes[3];
+      if (url.includes('scene-17-sales-process')) return scenes[4];
+      return null;
+    }
+
+    frame.addEventListener('load', () => {
+      const scene = matchSceneFromUrl(frame.contentWindow.location.href);
+      if (!scene) return;
+      activeId = scene.id;
+      updateCurrentScene(scene);
+      history.replaceState(null, '', '?scene=' + encodeURIComponent(scene.id));
+    });
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    selectScene(activeId);
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>

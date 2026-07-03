@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <base href="./">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星环烹云销售 AI 助手 · 售后与试菜群 Demo</title>
+  <link rel="stylesheet" href="../shared/css/styles.css">
+  <style>
+    :root {
+      --page-bg: #F0F2F5;
+      --surface: #FFFFFF;
+      --surface-soft: #F7F8FA;
+      --border: #E2E5EB;
+      --border-strong: #CBD0D8;
+      --text: #111827;
+      --muted: #6B7280;
+      --faint: #9CA3AF;
+      --brand: #2563EB;
+      --brand-soft: rgba(37, 99, 235, 0.08);
+      --green: #10B981;
+      --green-soft: #ECFDF5;
+      --orange: #F59E0B;
+      --orange-soft: #FFFBEB;
+      --purple: #8B5CF6;
+      --purple-soft: #F5F3FF;
+      --rose: #F43F5E;
+      --rose-soft: #FFF1F2;
+      --cyan: #06B6D4;
+      --cyan-soft: #ECFEFF;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input { font: inherit; }
+
+    .demo-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--page-bg);
+    }
+
+    body.embed-mode .demo-nav {
+      display: none;
+    }
+
+    .demo-nav {
+      height: 56px;
+      padding: 0 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-shrink: 0;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .brand-copy { min-width: 0; }
+    .brand-copy h1 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .brand-copy p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      line-height: 1.3;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .meta-pill i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .scenario-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 10px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .scenario-tabs.local-scene-tabs {
+      display: none;
+    }
+
+    .stage-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--tab-color, var(--brand));
+      border-radius: 8px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+      white-space: nowrap;
+      flex: 0 0 auto;
+      text-decoration: none;
+    }
+
+    .stage-tab:hover {
+      background: #fff;
+      border-color: var(--border-strong);
+    }
+
+    .stage-tab.active {
+      background: var(--surface);
+      border-color: var(--tab-color, var(--brand));
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-weight: 700;
+    }
+
+    .stage-tab-num {
+      color: var(--tab-color, var(--brand));
+      font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .demo-main {
+      flex: 0 0 auto;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(430px, 0.92fr) minmax(620px, 1.35fr);
+      gap: 14px;
+      padding: 14px 24px 20px;
+      align-items: start;
+    }
+
+    .chat-shell,
+    .ai-shell {
+      min-height: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-head {
+      height: 52px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .panel-title b {
+      font-size: 14px;
+      line-height: 1.2;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .panel-title span {
+      font-size: 11px;
+      line-height: 1.2;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: #047857;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.42);
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.42); }
+      70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .chat-window {
+      flex: 0 1 auto;
+      min-height: 0;
+      background: #ECEFF3;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wecom-top {
+      height: 48px;
+      padding: 0 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      background: #F7F8FA;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .group-title {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1F2937;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .group-title i {
+      width: 17px;
+      height: 17px;
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .group-title span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .group-count {
+      color: var(--faint);
+      font-size: 12px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .messages {
+      flex: 0 1 auto;
+      min-height: 260px;
+      max-height: calc(100vh - 286px);
+      overflow-y: auto;
+      padding: 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scroll-behavior: smooth;
+    }
+
+    .messages::-webkit-scrollbar,
+    .ai-content::-webkit-scrollbar,
+    .agent-log::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .messages::-webkit-scrollbar-thumb,
+    .ai-content::-webkit-scrollbar-thumb,
+    .agent-log::-webkit-scrollbar-thumb {
+      background: #CBD0D8;
+      border-radius: 4px;
+    }
+
+    .message-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 9px;
+      align-items: start;
+      max-width: 92%;
+      animation: messageIn .28s ease-out;
+    }
+
+    .message-row.own {
+      align-self: flex-end;
+      grid-template-columns: minmax(0, 1fr) 34px;
+    }
+
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.24), 0 1px 2px rgba(15,23,42,.12);
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar.customer { background: #4B5563; }
+    .avatar.sales {
+      background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+      border-radius: 50%;
+    }
+    .avatar.business {
+      background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+      border-radius: 6px;
+    }
+    .avatar.service { background: #059669; }
+    .avatar.chef { background: #D97706; }
+    .avatar.ai { background: #7C3AED; }
+
+    .bubble-wrap {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .own .bubble-wrap { align-items: flex-end; }
+
+    .sender-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #6B7280;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .sender-line time {
+      color: #9CA3AF;
+      font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+    }
+
+    .bubble {
+      position: relative;
+      max-width: 100%;
+      padding: 9px 11px;
+      border-radius: 6px;
+      background: #FFFFFF;
+      color: #111827;
+      font-size: 13px;
+      line-height: 1.55;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      word-break: break-word;
+    }
+
+    .own .bubble {
+      background: #95EC69;
+      box-shadow: 0 1px 2px rgba(40, 130, 37, 0.12);
+    }
+
+    .bubble::before {
+      content: "";
+      position: absolute;
+      left: -5px;
+      top: 12px;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-right: 6px solid #fff;
+    }
+
+    .own .bubble::before {
+      left: auto;
+      right: -5px;
+      border-right: 0;
+      border-left: 6px solid #95EC69;
+    }
+
+    .rich-card {
+      min-width: 260px;
+      max-width: 390px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    }
+
+    .map-card {
+      width: min(360px, calc(100vw - 96px));
+      max-width: 360px;
+    }
+
+    .rich-card .rich-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 11px;
+      border-bottom: 1px solid #EEF1F5;
+      background: #F8FAFC;
+      color: #111827;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .rich-card .rich-head i {
+      width: 16px;
+      height: 16px;
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .rich-body {
+      padding: 10px 11px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .map-card .rich-body {
+      grid-template-columns: 118px minmax(0, 1fr);
+      gap: 9px;
+      align-items: stretch;
+      padding: 8px;
+    }
+
+    .map-card .map-preview {
+      height: 92px;
+      border-radius: 7px;
+      background:
+        linear-gradient(90deg, rgba(37, 99, 235, 0.16) 1px, transparent 1px),
+        linear-gradient(rgba(16, 185, 129, 0.14) 1px, transparent 1px),
+        linear-gradient(135deg, #E0F2FE 0%, #F8FAFC 50%, #DCFCE7 100%);
+      background-size: 28px 28px, 28px 28px, 100% 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-info {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .map-title {
+      color: #111827;
+      font-size: 13px;
+      line-height: 1.28;
+      font-weight: 800;
+    }
+
+    .map-address {
+      color: #6B7280;
+      font-size: 11px;
+      line-height: 1.38;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .map-card .map-pin {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -60%);
+      width: 26px;
+      height: 26px;
+      border-radius: 50% 50% 50% 0;
+      rotate: -45deg;
+      background: #2563EB;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+    }
+
+    .map-card .map-pin::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .rich-row {
+      display: grid;
+      grid-template-columns: 62px minmax(0, 1fr);
+      gap: 8px;
+      color: #111827;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .rich-row label {
+      color: #6B7280;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .rich-row span {
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .nav-action {
+      height: 28px;
+      border: 0;
+      border-radius: 7px;
+      background: #2563EB;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: auto;
+    }
+
+    .nav-action i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .appointment-card .rich-body {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .appointment-card .rich-row {
+      grid-template-columns: 54px minmax(0, 1fr);
+      padding: 6px 7px;
+      border: 1px solid #EEF1F5;
+      border-radius: 6px;
+      background: #F8FAFC;
+    }
+
+    .appointment-card .rich-row.wide {
+      grid-column: 1 / -1;
+    }
+
+    .photo-card {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      max-width: 420px;
+    }
+
+    .photo-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 8;
+      object-fit: cover;
+    }
+
+    .photo-caption {
+      padding: 8px 10px;
+      color: #374151;
+      font-size: 12px;
+      line-height: 1.45;
+      background: #fff;
+    }
+
+    .chat-input {
+      min-height: 58px;
+      padding: 9px 12px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      background: #F7F8FA;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: #4B5563;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: border-color .15s ease, color .15s ease, background .15s ease;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-soft);
+    }
+
+    .icon-btn i { width: 16px; height: 16px; }
+
+    .input-ghost {
+      flex: 1;
+      height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--faint);
+      padding: 0 12px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .playbar {
+      height: 56px;
+      padding: 9px 12px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .control-btn {
+      height: 34px;
+      padding: 0 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .15s ease, color .15s ease, background .15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .control-btn:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-soft);
+    }
+
+    .control-btn.primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+    }
+
+    .control-btn.primary:hover {
+      background: #1D4ED8;
+      color: #fff;
+    }
+
+    .control-btn i { width: 15px; height: 15px; }
+
+    .progress {
+      flex: 1;
+      min-width: 90px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      height: 4px;
+      flex: 1;
+      border-radius: 999px;
+      background: #E5E7EB;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--brand);
+      border-radius: inherit;
+      transition: width .25s ease;
+    }
+
+    .ai-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 12px;
+      background: #F7F8FA;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .ai-main-grid {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .ai-context-note {
+      grid-column: 1 / -1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 9px;
+      align-items: center;
+      padding: 11px 12px;
+      border: 2px solid #F59E0B;
+      border-left: 6px solid #EA580C;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #FEF3C7 0%, #FFF7ED 100%);
+      color: #7C2D12;
+      box-shadow: 0 8px 18px rgba(245, 158, 11, .16);
+    }
+
+    .ai-context-note i {
+      width: 34px;
+      height: 34px;
+      padding: 8px;
+      border-radius: 8px;
+      background: #FFEDD5;
+      color: #EA580C;
+      box-shadow: inset 0 0 0 1px #FDBA74;
+    }
+
+    .ai-context-note span {
+      min-width: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      font-weight: 900;
+    }
+
+    .ai-card {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 11px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+      min-height: 112px;
+    }
+
+    .ai-card.updated {
+      border-color: var(--brand);
+      background: #EFF6FF;
+      animation: cardPop .32s ease-out;
+    }
+
+    @keyframes cardPop {
+      from { transform: translateY(3px); }
+      to { transform: translateY(0); }
+    }
+
+    .ai-card.span-2 {
+      grid-column: 1 / -1;
+      min-height: 120px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 9px;
+    }
+
+    .card-title {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .card-title i {
+      width: 15px;
+      height: 15px;
+      color: var(--card-color, var(--brand));
+      flex-shrink: 0;
+    }
+
+    .card-title span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status-tag {
+      height: 20px;
+      padding: 0 7px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      background: #F3F4F6;
+      color: #6B7280;
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-tag.detected {
+      background: var(--green-soft);
+      color: #047857;
+    }
+
+    .status-tag.draft {
+      background: var(--orange-soft);
+      color: #B45309;
+    }
+
+    .card-body {
+      display: grid;
+      gap: 7px;
+    }
+
+    .empty-copy {
+      color: var(--faint);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      gap: 8px;
+      padding: 6px 7px;
+      border-radius: 6px;
+      background: var(--surface-soft);
+      border: 1px solid #EDF0F4;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .field-row label {
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .field-row b {
+      min-width: 0;
+      color: var(--text);
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border: 1px solid #E5E7EB;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .chip.blue { border-color: #BFDBFE; background: #EFF6FF; color: #1D4ED8; }
+    .chip.green { border-color: #A7F3D0; background: #ECFDF5; color: #047857; }
+    .chip.orange { border-color: #FDE68A; background: #FFFBEB; color: #B45309; }
+    .chip.purple { border-color: #DDD6FE; background: #F5F3FF; color: #6D28D9; }
+    .chip.rose { border-color: #FECDD3; background: #FFF1F2; color: #BE123C; }
+
+    .profile-rich {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .profile-person {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      grid-template-areas:
+        "photo name"
+        "photo wechat"
+        "roles roles";
+      gap: 5px 9px;
+      min-width: 0;
+      padding: 0 0 8px;
+      border-bottom: 1px solid #EEF1F5;
+      background: transparent;
+    }
+
+    .profile-photo {
+      grid-area: photo;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #E5E7EB;
+      box-shadow: 0 1px 2px rgba(15,23,42,.12);
+    }
+
+    .profile-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .profile-name {
+      grid-area: name;
+      min-width: 0;
+    }
+
+    .profile-name b {
+      display: block;
+      color: #111827;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-name span,
+    .profile-wechat {
+      color: #6B7280;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .profile-wechat {
+      grid-area: wechat;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .role-tabs {
+      grid-area: roles;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding-top: 2px;
+    }
+
+    .role-tab {
+      height: 22px;
+      border: 1px solid #D1D5DB;
+      border-radius: 999px;
+      background: #fff;
+      color: #6B7280;
+      padding: 0 7px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .role-tab.active {
+      border-color: #BFDBFE;
+      background: #EFF6FF;
+      color: #1D4ED8;
+    }
+
+    .profile-detail {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 7px;
+      align-items: start;
+    }
+
+    .role-detail {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      display: grid;
+      gap: 4px;
+    }
+
+    .role-detail-title {
+      display: flex;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: #111827;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .role-detail-title span {
+      color: #6B7280;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .profile-section {
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .profile-section-title {
+      flex: 0 0 auto;
+      min-width: 66px;
+      padding-top: 3px;
+      color: #111827;
+      font-size: 11px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .business-grid {
+      min-width: 0;
+      flex: 1 1 220px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px 8px;
+    }
+
+    .profile-section .field-row {
+      min-width: 0;
+      flex: 1 1 180px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      line-height: 1.3;
+    }
+
+    .profile-section .field-row label {
+      flex: 0 0 auto;
+    }
+
+    .profile-section .field-row b {
+      min-width: 0;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-section .chips {
+      min-width: 0;
+      flex: 1 1 100%;
+      padding-top: 1px;
+    }
+
+    .business-tile {
+      min-width: 0;
+      flex: 1 1 120px;
+      padding: 3px 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      color: #111827;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .business-tile label {
+      flex: 0 0 auto;
+      color: #6B7280;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .business-tile b {
+      min-width: 0;
+      color: #111827;
+      font-weight: 850;
+      display: block;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      overflow: hidden;
+    }
+
+    .side-stack {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .task-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+      animation: cardPop .26s ease-out;
+    }
+
+    .task-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .task-name {
+      min-width: 0;
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .task-name i {
+      width: 14px;
+      height: 14px;
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .task-desc {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .mini-tag {
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .reply-box {
+      border: 1px solid #BFDBFE;
+      background: #EFF6FF;
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .reply-text {
+      color: #1E3A8A;
+      font-size: 12px;
+      line-height: 1.58;
+    }
+
+    .reply-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .small-btn {
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--muted);
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease, color .15s ease;
+    }
+
+    .small-btn i {
+      width: 13px;
+      height: 13px;
+    }
+
+    .small-btn.primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+    }
+
+    .small-btn:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-soft);
+    }
+
+    .small-btn.primary:hover {
+      background: #1D4ED8;
+      color: #fff;
+    }
+
+    .agent-log {
+      max-height: 232px;
+      overflow-y: auto;
+      display: grid;
+      gap: 7px;
+    }
+
+    .log-item {
+      border-left: 3px solid var(--brand);
+      background: var(--surface);
+      border-radius: 7px;
+      padding: 8px 9px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      animation: messageIn .24s ease-out;
+    }
+
+    .log-title {
+      color: var(--text);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .log-copy {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .footer-note {
+      padding: 9px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+      flex-shrink: 0;
+    }
+
+    .service-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 30;
+      transform: translateX(-50%) translateY(12px);
+      opacity: 0;
+      pointer-events: none;
+      min-height: 34px;
+      padding: 8px 13px;
+      border-radius: 8px;
+      background: #111827;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.4;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, .22);
+      transition: transform .2s ease, opacity .2s ease;
+    }
+
+    .service-toast.is-visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .extraction-beam {
+      position: fixed;
+      left: var(--beam-left);
+      top: var(--beam-top);
+      width: var(--beam-width);
+      height: 2px;
+      z-index: 25;
+      pointer-events: none;
+      background: linear-gradient(90deg, rgba(37,99,235,0), rgba(37,99,235,.72), rgba(16,185,129,.72), rgba(16,185,129,0));
+      transform-origin: left center;
+      animation: beamTravel .86s ease-out forwards;
+      filter: drop-shadow(0 0 6px rgba(37,99,235,.28));
+    }
+
+    .extraction-beam::after {
+      content: "";
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      transform: translateY(-50%);
+      box-shadow: 0 0 0 5px rgba(16,185,129,.14);
+    }
+
+    .extraction-chip {
+      position: fixed;
+      left: var(--chip-left);
+      top: var(--chip-top);
+      z-index: 26;
+      pointer-events: none;
+      border: 1px solid rgba(37,99,235,.22);
+      border-radius: 999px;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 800;
+      box-shadow: 0 6px 18px rgba(37,99,235,.14);
+      animation: chipTravel .86s ease-out forwards;
+      white-space: nowrap;
+    }
+
+    @keyframes beamTravel {
+      0% { opacity: 0; transform: scaleX(.08); }
+      18% { opacity: 1; }
+      78% { opacity: 1; transform: scaleX(1); }
+      100% { opacity: 0; transform: scaleX(1); }
+    }
+
+    @keyframes chipTravel {
+      0% { opacity: 0; transform: translateX(0) translateY(3px) scale(.96); }
+      18% { opacity: 1; }
+      82% { opacity: 1; transform: translateX(var(--chip-move)) translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateX(var(--chip-move)) translateY(-2px) scale(.98); }
+    }
+
+    @media (max-width: 1180px) {
+      .demo-main {
+        grid-template-columns: 1fr;
+      }
+      .chat-shell,
+      .ai-shell {
+        min-height: 620px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .demo-nav {
+        height: auto;
+        padding: 12px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .nav-meta {
+        width: 100%;
+        overflow-x: auto;
+      }
+      .scenario-tabs {
+        padding: 9px 12px;
+      }
+      .demo-main {
+        padding: 12px;
+      }
+      .chat-shell,
+      .ai-shell {
+        min-height: 560px;
+      }
+      .ai-content {
+        grid-template-columns: 1fr;
+      }
+      .ai-main-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-rich,
+      .business-grid {
+        grid-template-columns: 1fr;
+      }
+      .message-row {
+        max-width: 100%;
+      }
+      .playbar {
+        flex-wrap: wrap;
+        height: auto;
+      }
+      .progress {
+        flex-basis: 100%;
+      }
+      .brand-copy h1,
+      .brand-copy p {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-page">
+    <nav class="demo-nav">
+      <div class="brand-lockup">
+        <div class="brand-mark">NC</div>
+        <div class="brand-copy">
+          <h1>星环烹云销售 AI 助手 · 售后与试菜群 Demo</h1>
+          <p>从企微群消息中实时识别业务事件，预创建流程任务，并生成可确认发送的服务回复。</p>
+        </div>
+      </div>
+      <div class="nav-meta">
+        <span class="meta-pill"><i data-lucide="message-square-text"></i>企业微信群</span>
+        <span class="meta-pill"><i data-lucide="scan-line"></i>实时抽取</span>
+        <span class="meta-pill"><i data-lucide="workflow"></i>OA / 工单 / CRM</span>
+      </div>
+    </nav>
+
+    <div class="scenario-tabs global-scene-tabs">
+      <a class="stage-tab active" style="--tab-color:#8B5CF6" href="../scene-13-service-ai/index.html?scenario=visit-tasting">
+        <span class="stage-tab-num">售前：</span>
+        <span class="stage-tab-name">参观接待 / 试菜群</span>
+      </a>
+      <a class="stage-tab" style="--tab-color:#2563EB" href="../scene-14-delivery-install-training/index.html">
+        <span class="stage-tab-num">售后：</span>
+        <span class="stage-tab-name">已成交未安装</span>
+      </a>
+      <a class="stage-tab" style="--tab-color:#10B981" href="../scene-15-warranty-service/index.html">
+        <span class="stage-tab-num">售后：</span>
+        <span class="stage-tab-name">成交客户质保期内</span>
+      </a>
+      <a class="stage-tab" style="--tab-color:#F59E0B" href="../scene-16-out-of-warranty-service/index.html">
+        <span class="stage-tab-num">售后：</span>
+        <span class="stage-tab-name">质保期外 / 过保</span>
+      </a>
+      <a class="stage-tab" style="--tab-color:#EC4899" href="../scene-17-sales-process/index.html">
+        <span class="stage-tab-num">销售：</span>
+        <span class="stage-tab-name">销售过程</span>
+      </a>
+    </div>
+
+    <div class="scenario-tabs local-scene-tabs" id="scenarioTabs"></div>
+
+    <main class="demo-main">
+      <section class="chat-shell">
+        <div class="panel-head">
+          <div class="panel-title">
+            <b id="chatPanelTitle">企微群聊</b>
+            <span id="chatPanelSubtitle">客户、销售、售后、厨师在群内连续沟通</span>
+          </div>
+          <span class="live-badge"><span class="live-dot"></span>会话存档接入中</span>
+        </div>
+
+        <div class="chat-window">
+          <div class="wecom-top">
+            <div class="group-title"><i data-lucide="users-round"></i><span id="groupTitle">加载中...</span></div>
+            <div class="group-count" id="groupCount">0 人</div>
+          </div>
+          <div class="messages" id="messages"></div>
+          <div class="chat-input">
+            <button class="icon-btn" type="button" title="语音"><i data-lucide="mic"></i></button>
+            <div class="input-ghost">群聊输入框 · AI 在后台生成建议，仍由销售/售后确认发送</div>
+            <button class="icon-btn" type="button" title="附件"><i data-lucide="paperclip"></i></button>
+            <button class="icon-btn" type="button" title="更多"><i data-lucide="plus"></i></button>
+          </div>
+        </div>
+
+        <div class="playbar">
+          <button class="control-btn" type="button" id="resetBtn"><i data-lucide="rotate-ccw"></i>重播</button>
+          <button class="control-btn" type="button" id="stepBtn"><i data-lucide="step-forward"></i>步进</button>
+          <button class="control-btn primary" type="button" id="playBtn"><i data-lucide="pause"></i><span>暂停</span></button>
+          <div class="progress">
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            <span id="progressText">0 / 0</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="ai-shell">
+        <div class="panel-head">
+          <div class="panel-title">
+            <b>AI 机器人实时分析</b>
+            <span id="aiSubtitle">等待群聊消息触发业务事件</span>
+          </div>
+          <span class="live-badge"><span class="live-dot"></span>AI 机器人分析中</span>
+        </div>
+
+        <div class="ai-content">
+          <div class="ai-main-grid">
+            <div class="ai-context-note">
+              <i data-lucide="bell-ring"></i>
+              <span>售前接待和试菜群里，客户时间、展厅、菜品、口味评价和自带食材常散在聊天中，销售/接待容易漏准备。AI 会提取试菜预约、备料清单和客户偏好，并提前提醒负责人。</span>
+            </div>
+
+            <article class="ai-card" id="card-install" style="--card-color:#2563EB">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="calendar-clock"></i><span>安装预约</span></div>
+                <span class="status-tag" data-status>待识别</span>
+              </div>
+              <div class="card-body" data-body></div>
+            </article>
+
+            <article class="ai-card" id="card-training" style="--card-color:#10B981">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="chef-hat"></i><span>培训需求</span></div>
+                <span class="status-tag" data-status>待识别</span>
+              </div>
+              <div class="card-body" data-body></div>
+            </article>
+
+            <article class="ai-card" id="card-repair" style="--card-color:#F43F5E">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="wrench"></i><span>维修工单</span></div>
+                <span class="status-tag" data-status>待识别</span>
+              </div>
+              <div class="card-body" data-body></div>
+            </article>
+
+            <article class="ai-card" id="card-parts" style="--card-color:#F59E0B">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="package-check"></i><span>配件备货</span></div>
+                <span class="status-tag" data-status>待识别</span>
+              </div>
+              <div class="card-body" data-body></div>
+            </article>
+
+            <article class="ai-card" id="card-dishes" style="--card-color:#8B5CF6">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="utensils"></i><span>试菜菜品</span></div>
+                <span class="status-tag" data-status>待识别</span>
+              </div>
+              <div class="card-body" data-body></div>
+            </article>
+
+            <article class="ai-card" id="card-feedback" style="--card-color:#06B6D4">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="thumbs-up"></i><span>客户评价</span></div>
+                <span class="status-tag" data-status>待识别</span>
+              </div>
+              <div class="card-body" data-body></div>
+            </article>
+
+            <article class="ai-card span-2" id="card-profile" style="--card-color:#2563EB">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="contact-round"></i><span>客户画像</span></div>
+                <span class="status-tag" data-status>持续更新</span>
+              </div>
+              <div class="card-body" data-body></div>
+            </article>
+
+            <article class="ai-card span-2" id="card-next" style="--card-color:#10B981">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="route"></i><span>下一步销售建议</span></div>
+                <span class="status-tag" data-status>待生成</span>
+              </div>
+              <div class="card-body" data-body></div>
+            </article>
+          </div>
+
+          <aside class="side-stack">
+            <article class="ai-card span-2" style="--card-color:#F59E0B">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="clipboard-list"></i><span>任务预创建</span></div>
+                <span class="status-tag draft" id="taskStatus">草稿 0</span>
+              </div>
+              <div class="task-list" id="taskList">
+                <div class="empty-copy">AI 会把群聊里的安装、培训、维修、配件、试菜和回访信号预创建为 OA / 工单 / CRM 任务。</div>
+              </div>
+            </article>
+
+            <article class="ai-card span-2" style="--card-color:#2563EB">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="message-square-reply"></i><span>确认后发送的回复建议</span></div>
+                <span class="status-tag" id="replyStatus">待生成</span>
+              </div>
+              <div id="replyBox">
+                <div class="empty-copy">当关键字段足够完整后，AI 会生成一条以销售或售后身份发送的回复草稿。</div>
+              </div>
+            </article>
+
+            <article class="ai-card span-2" style="--card-color:#8B5CF6">
+              <div class="card-head">
+                <div class="card-title"><i data-lucide="activity"></i><span>AI 机器人执行记录</span></div>
+                <span class="status-tag detected">实时</span>
+              </div>
+              <div class="agent-log" id="agentLog">
+                <div class="empty-copy">等待第一条群聊消息...</div>
+              </div>
+            </article>
+          </aside>
+        </div>
+
+        <div class="footer-note">
+          一期演示重点：AI 不直接替人“自动聊天”，而是在后台识别事件、预创建流程、生成回复草稿，再由销售或售后确认后发出。
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="service-toast" id="toast"></div>
+
+  <script src="../scene-11-sales-assistant/shared/js/lucide.min.js"></script>
+  <script>
+    const scenarios = [
+      {
+        id: 'after-sales',
+        tab: '售后：',
+        tabName: '售后服务群',
+        color: '#10B981',
+        title: '售后服务群：安装、培训、维修、配件',
+        subtitle: '客户在成交后服务群中提出多项交付与售后需求',
+        group: '陈香贵上海新店 · 星环服务群',
+        count: '8 人',
+        messages: [
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '09:28',
+            text: '我们上海新店下周二可以安排安装吗？机器到了以后希望当天调试好。',
+            log: ['读取群消息：客户提出安装预约', '抽取字段：上海新店、下周二、到货后当天调试', '建议：预创建安装 OA 任务'],
+            updates: {
+              install: { status: '已识别', fields: [['时间', '下周二'], ['地点', '上海新店'], ['要求', '到货后当天安装调试']] },
+              profile: { tags: ['连锁快餐客户', '上海新店开业', '交付周期敏感'], fields: [['客户阶段', '已成交 / 交付准备'], ['核心诉求', '尽快完成安装调试']] },
+              tasks: [{ type: 'OA', name: '安装预约任务', desc: '上海新店下周二安装调试，需售后确认工程师排期。', owner: '售后 陈工', status: '待确认' }]
+            }
+          },
+          {
+            role: 'service',
+            name: '售后 陈工',
+            time: '09:29',
+            text: '收到，我先看一下上海区域安装排期，设备型号还是 G3 标准版对吗？',
+            log: ['识别售后响应：追问设备型号', '补齐字段：G3 标准版待客户确认', '更新任务：安装任务进入信息确认状态'],
+            updates: {
+              install: { status: '补字段', fields: [['时间', '下周二'], ['地点', '上海新店'], ['设备', 'G3 标准版待确认']] },
+              next: { title: '先确认型号与门店联系人', items: ['请客户确认设备型号、收货联系人和门店进场时间。', '安装任务暂不正式派单，先进入 OA 草稿状态。'] }
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '09:31',
+            text: '是 G3 标准版。厨师培训也一起定一下，我们新员工多，最好教两道高峰菜。',
+            log: ['客户确认设备型号：G3 标准版', '识别培训需求：新员工多、两道高峰菜', '建议：预创建培训排期并同步厨师'],
+            updates: {
+              install: { status: '已确认', fields: [['时间', '下周二'], ['地点', '上海新店'], ['设备', 'G3 标准版']] },
+              training: { status: '已识别', fields: [['培训对象', '新店新员工'], ['培训内容', '两道高峰菜'], ['时间', '建议与安装同日']] },
+              tasks: [{ type: 'OA', name: '厨师培训排期', desc: '安装同日安排厨师培训，重点讲解两道高峰菜标准参数。', owner: '厨师 刘师傅', status: '待确认' }],
+              profile: { tags: ['连锁快餐客户', '上海新店开业', '新员工培训压力'], fields: [['客户阶段', '交付准备'], ['核心诉求', '快速上手、稳定出餐']] }
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '09:35',
+            text: '另外上一台机器最近有两次  E17 报警，虽然还能用，但想让师傅顺便看一下。',
+            log: ['识别维修事件：E17 报警两次', '判断优先级：可用但需现场检查', '建议：预创建维修工单并与安装行程合并'],
+            updates: {
+              repair: { status: '已识别', fields: [['故障现象', 'E17 报警两次'], ['设备状态', '仍可使用'], ['处理建议', '安装当日顺路检查']] },
+              tasks: [{ type: '工单', name: 'E17 报警检查工单', desc: '上一台设备出现 E17 报警两次，建议安装当天安排工程师现场排查。', owner: '售后 陈工', status: '待确认' }],
+              next: { title: '合并安装与维修行程', items: ['将维修检查并入下周二安装路线，减少客户等待。', '提前让客户拍摄报警页面，便于工程师判断备件。'] }
+            }
+          },
+          {
+            role: 'sales',
+            name: '销售 陈峰',
+            time: '09:36',
+            text: '王总，新店预计月底开业对吗？我这边同步准备培训材料和常用配件清单。',
+            log: ['销售补充业务背景：月底开业', '识别风险：开业前交付窗口紧', '建议：客户进入重点交付跟进'],
+            updates: {
+              profile: { tags: ['重点交付客户', '月底开业', '高峰出餐风险'], fields: [['客户阶段', '交付冲刺'], ['决策关注', '准时开业、稳定出餐、售后响应']] },
+              next: { title: '开业前建立交付倒排', items: ['下周二安装培训，安装后 48 小时回访。', '月底开业前再做一次参数确认和配件清单确认。'] }
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '09:38',
+            text: '对，月底开业。常用配件先备一套吧，我们怕开业高峰期影响出餐。',
+            log: ['识别配件备货需求：常用配件一套', '识别客户担忧：开业高峰影响出餐', '建议：预创建 CRM 增购线索并同步仓储'],
+            updates: {
+              parts: { status: '已识别', fields: [['配件需求', '常用配件一套'], ['使用场景', '开业高峰期备货'], ['协同对象', '销售、仓储、售后']] },
+              tasks: [{ type: 'CRM', name: '配件备货/增购机会', desc: '客户主动提出常用配件备货一套，需销售确认报价并同步仓储库存。', owner: '销售 陈峰', status: '待确认' }],
+              next: { title: '把服务需求转成开业保障包', items: ['提供安装、培训、报警检查、配件备货的一体化确认单。', '销售可顺势推荐开业前保障方案和常用备件包。'] },
+              reply: { by: '售后 陈工', text: '王总，收到。我这边先按下周二为上海新店预留安装调试，并把厨师培训、E17 报警检查一起并入当天行程。常用配件我同步李敏确认清单和库存，稍后把安装联系人、培训菜品和配件确认单发群里，您确认后我们就正式派单。' }
+            }
+          }
+        ]
+      },
+      {
+        id: 'visit-tasting',
+        tab: '售前：',
+        tabName: '参观接待 / 试菜群',
+        color: '#8B5CF6',
+        title: '参观接待 / 试菜群：销售邀约、展厅推荐、试菜留存',
+        subtitle: '销售引导客户选择展厅、确认人数菜系，再由商务星澜辅助发送地址与预约信息',
+        group: '王总-星环烹云杭州展厅接待群',
+        count: '6 人',
+        messages: [
+          {
+            role: 'sales',
+            name: '销售 陈峰',
+            time: '10:02',
+            text: '王总，刚加上您。方便问下您门店在哪个城市吗？我们全国现在有 8 个展厅，珠海总部这边参观和试菜效果最完整；如果您时间紧，也可以就近安排。',
+            log: ['销售主动邀约客户进入参观流程', '识别关键信息待补充：城市、到访人数、菜系、是否自带食材', '建议：先推荐珠海总部，再匹配就近展厅'],
+            updates: {
+              profile: { tags: ['销售主动邀约', '参观意向待确认', '展厅匹配中'], fields: [['客户阶段', '参观邀约'], ['待补充信息', '客户城市、人数、菜系、试菜食材']] },
+              next: { title: '用销售做前置引导', items: ['先问客户所在城市和时间，再推荐总部或就近展厅。', '继续确认到访人数、菜系、想验证的菜品和是否自带食材。'] }
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '10:04',
+            text: '我们在杭州，近期想先就近看看。预计三个人过去，主要看快餐高峰期出餐和口味稳定。',
+            log: ['抽取客户城市：杭州', '抽取到访人数：3 人', '识别关注点：高峰出餐、口味稳定'],
+            updates: {
+              profile: { tags: ['杭州客户', '3 人到访', '关注高峰出餐'], fields: [['客户阶段', '参观预约沟通'], ['客户城市', '杭州'], ['核心关注', '快餐高峰出餐、口味稳定']] },
+              tasks: [{ type: 'CRM', name: '展厅匹配建议', desc: '客户在杭州，优先匹配浙江杭州展厅；可补充推荐珠海总部完整参观路线。', owner: '销售 陈峰', status: '预创建' }],
+              next: { title: '推荐杭州展厅，同时保留珠海总部选项', items: ['杭州客户可先约浙江杭州星环烹云展厅。', '说明珠海总部可参观智慧餐厅、总部样板和更完整菜品。'] }
+            }
+          },
+          {
+            role: 'business',
+            name: '商务 星澜',
+            time: '10:05',
+            text: '王总您好，我先为您匹配展厅：就近推荐星环烹云(杭州店)；如果想看总部完整动线，也可以安排珠海星环中心 6 楼餐厅、金鼎科技园智慧餐厅或百和大厦 3 楼餐厅。',
+            log: ['商务星澜调用展厅知识库', '匹配展厅：浙江杭州星环烹云展厅', '同时展示珠海总部优先参观选项'],
+            updates: {
+              profile: { tags: ['杭州展厅优先', '总部参观备选', '商务星澜辅助'], fields: [['客户阶段', '展厅选择'], ['推荐展厅', '星环烹云(杭州店)'], ['备选路线', '珠海总部三处餐厅']] },
+              tasks: [{ type: 'OA', name: '展厅接待预约', desc: '待客户确认时间后，预约星环烹云(杭州店)并同步展厅接待人员。', owner: '商务 星澜', status: '待补充' }]
+            }
+          },
+          {
+            role: 'sales',
+            name: '销售 陈峰',
+            time: '10:06',
+            text: '王总，如果这次先就近看杭州展厅，我帮您约杭州同事。您看大概哪天方便？另外想试什么菜系、几道菜？食材可以我们准备，也可以您带自己的核心食材过来。',
+            log: ['销售继续引导预约时间', '追问菜系与菜品数量', '提示客户可自带核心食材'],
+            updates: {
+              next: { title: '继续补齐试菜准备字段', items: ['确认具体到访时间和是否自带食材。', '确认菜系、菜品和核心验证目标，便于厨师备料。'] }
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '10:09',
+            text: '下周三下午 2 点可以。我们偏川湘菜，想试宫保鸡丁、小炒黄牛肉、青椒肉丝。小炒黄牛肉我们可以自己带一份牛肉，看看和门店食材接近的效果。',
+            log: ['识别预约时间：下周三 14:00', '识别菜系：川湘菜', '识别自带食材：小炒黄牛肉牛肉一份'],
+            updates: {
+              dishes: { status: '已识别', fields: [['时间', '下周三 14:00'], ['菜品', '宫保鸡丁、小炒黄牛肉、青椒肉丝'], ['食材', '客户自带小炒黄牛肉牛肉一份']] },
+              profile: { tags: ['川湘菜系', '自带核心食材', '现场验证意愿强'], fields: [['客户阶段', '试菜预约确认'], ['核心关注', '高峰出餐、口味稳定、门店食材适配']] },
+              tasks: [{ type: 'OA', name: '试菜菜品与食材准备', desc: '下周三 14:00，准备宫保鸡丁、小炒黄牛肉、青椒肉丝；客户自带牛肉一份。', owner: '厨师 刘师傅', status: '待确认' }]
+            }
+          },
+          {
+            role: 'business',
+            name: '商务 星澜',
+            time: '10:10',
+            kind: 'map',
+            text: '已为您生成展厅导航信息',
+            map: {
+              title: '星环烹云(杭州店)',
+              address: '浙江省杭州市西湖区浙财大金融科技园'
+            },
+            log: ['生成企微地址卡片：星环烹云(杭州店)', '抽取地址：浙江省杭州市西湖区浙财大金融科技园', '可点击导航，减少客户到访成本'],
+            updates: {
+              tasks: [{ type: 'OA', name: '发送展厅地址卡', desc: '向客户发送星环烹云(杭州店)地址与导航入口。', owner: '商务 星澜', status: '已生成' }],
+              next: { title: '把到访信息结构化发给客户', items: ['发小型地址卡，确保客户可点击导航。', '把时间、菜品和自带食材发成预约确认卡。'] }
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '10:10',
+            text: '好的，这个地址我们能导航到。下周三我们从门店过去，大概提前十几分钟到。',
+            log: ['客户确认地址可达', '识别到访节奏：提前十几分钟到达', '更新接待提醒：提前准备接待动线'],
+            updates: {
+              profile: { tags: ['地址已确认', '预计提前到达', '试菜预约稳定'], fields: [['客户阶段', '地址确认 / 预约确认'], ['到访节奏', '下周三 14:00 前约十几分钟到达'], ['核心关注', '高峰出餐、口味稳定、门店食材适配']] },
+              tasks: [{ type: 'OA', name: '到访前接待提醒', desc: '客户预计提前十几分钟到达，展厅需提前准备接待动线和试菜台面。', owner: '杭州展厅接待', status: '预创建' }]
+            }
+          },
+          {
+            role: 'business',
+            name: '商务 星澜',
+            time: '10:12',
+            kind: 'appointment',
+            text: '预约信息确认',
+            appointment: {
+              title: '展厅参观与试菜预约',
+              rows: [
+                ['时间', '下周三 14:00'],
+                ['地点', '星环烹云(杭州店)'],
+                ['人数', '3 人'],
+                ['菜品', '宫保鸡丁、小炒黄牛肉、青椒肉丝'],
+                ['食材', '客户自带牛肉一份，其余由展厅准备']
+              ]
+            },
+            log: ['生成预约确认卡：时间、地点、人数、菜品、食材', '同步试菜准备字段到 OA 草稿', '提醒销售确认后发送给客户'],
+            updates: {
+              dishes: { status: '预约确认', fields: [['时间', '下周三 14:00'], ['地点', '星环烹云(杭州店)'], ['菜品', '宫保鸡丁、小炒黄牛肉、青椒肉丝']] },
+              tasks: [{ type: 'OA', name: '展厅接待预约确认', desc: '星环烹云(杭州店)下周三 14:00 接待 3 人，同步厨师和展厅接待人员。', owner: '杭州展厅接待', status: '待确认' }],
+              reply: { by: '销售 陈峰', text: '王总，已给您约好星环烹云(杭州店)，下周三下午 2 点，3 位到访。地址和导航已发群里，试菜菜品先按宫保鸡丁、小炒黄牛肉、青椒肉丝准备，小炒黄牛肉的牛肉您可以自带，其余食材我们展厅准备。' }
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '10:13',
+            text: '预约信息OK。小炒黄牛肉的牛肉我们当天带过去，其他菜你们准备就行。',
+            log: ['客户确认预约信息', '确认自带食材范围：仅牛肉', '预约状态：可进入试菜准备'],
+            updates: {
+              dishes: { status: '客户确认', fields: [['时间', '下周三 14:00'], ['地点', '星环烹云(杭州店)'], ['食材', '客户自带牛肉；其他食材展厅准备']] },
+              tasks: [{ type: 'OA', name: '试菜备料确认', desc: '客户确认仅自带小炒黄牛肉牛肉，其余食材由展厅准备。', owner: '厨师 刘师傅', status: '待执行' }]
+            }
+          },
+          {
+            role: 'chef',
+            name: '厨师 刘师傅',
+            time: '10:14',
+            text: '收到，我按川湘口味准备。青椒肉丝可以现场做两版参数，一版快炒看速度，一版口味重一点；小炒黄牛肉会用您带的牛肉再对比一版展厅食材。',
+            log: ['厨师确认试菜方案', '识别现场 AB 参数：青椒肉丝两版', '记录对比方案：客户食材 vs 展厅食材'],
+            updates: {
+              dishes: { status: '厨师方案确认', fields: [['时间', '下周三 14:00'], ['菜品', '宫保鸡丁、小炒黄牛肉、青椒肉丝'], ['厨师方案', '青椒肉丝两版参数；黄牛肉双食材对比']] },
+              tasks: [{ type: 'OA', name: '试菜准备清单', desc: '自动生成食材、调料、设备参数准备项；包含客户自带牛肉和展厅备料。', owner: '厨师 刘师傅', status: '待执行' }]
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '13:46',
+            text: '我们快到浙财大金融科技园了，是直接到中庭这边吗？',
+            log: ['识别到访临近消息：客户快到', '触发接待提醒：展厅人员准备迎接', '建议：发送到店指引'],
+            updates: {
+              tasks: [{ type: 'OA', name: '客户到店提醒', desc: '客户即将到达浙财大金融科技园，通知展厅接待人员到中庭附近迎接。', owner: '杭州展厅接待', status: '待确认' }],
+              next: { title: '发送到店指引', items: ['客户快到时，优先给出中庭/门头等现场识别信息。', '提醒展厅人员提前准备试菜台面和拍照留存。'] }
+            }
+          },
+          {
+            role: 'business',
+            name: '商务 星澜',
+            time: '13:47',
+            text: '对的王总，直接到中庭这边，看到“星环烹云(杭州店)”门头就到了。我也同步展厅同事留意您到达。',
+            log: ['商务星澜发送到店指引', '同步展厅接待提醒', '客户到访流程进入现场接待'],
+            updates: {
+              profile: { tags: ['客户已到附近', '现场接待中', '试菜即将开始'], fields: [['客户阶段', '到店接待'], ['到店指引', '中庭 / 星环烹云(杭州店)门头'], ['下一动作', '现场接待与试菜拍照留存']] }
+            }
+          },
+          {
+            role: 'business',
+            name: '商务 星澜',
+            time: '16:28',
+            kind: 'photo',
+            text: '试菜现场照片已上传',
+            photo: {
+              src: 'assets/tasting-session-photos.png',
+              caption: '试菜留存：厨师出菜、小炒黄牛肉、青椒肉丝快炒版'
+            },
+            log: ['识别群内图片：试菜现场照片', '抽取素材类型：厨师出菜、菜品成品、对比样张', '建议：归档到试菜案例与客户跟进记录'],
+            updates: {
+              feedback: { status: '素材已归档', fields: [['照片内容', '厨师出菜、小炒黄牛肉、青椒肉丝'], ['沉淀用途', '试菜纪要、客户案例、后续方案'], ['归档状态', '已进入 CRM 试菜素材']] },
+              tasks: [{ type: 'CRM', name: '试菜照片归档', desc: '将试菜现场照片关联到王总客户档案，作为后续方案和案例素材。', owner: '销售 陈峰', status: '预创建' }]
+            }
+          },
+          {
+            role: 'customer',
+            name: '客户 王总',
+            time: '16:42',
+            text: '今天试菜整体不错，小炒黄牛肉出品很稳。宫保鸡丁甜味可以再轻一点，青椒肉丝快炒版速度挺好。',
+            log: ['识别现场反馈：小炒黄牛肉稳定', '识别优化点：宫保鸡丁甜味偏重', '识别正向评价：青椒肉丝快炒版速度好'],
+            updates: {
+              feedback: { status: '已记录', fields: [['正向反馈', '小炒黄牛肉出品稳定；青椒肉丝快炒版速度好'], ['调整建议', '宫保鸡丁甜味降低'], ['产品适配', '快餐高峰菜适配度高']] },
+              profile: { tags: ['出品稳定认可', '关注口味微调', '成交意向升温'], fields: [['客户阶段', '试菜完成 / 方案跟进'], ['核心关注', '出餐速度、口味稳定、参数可调']] },
+              tasks: [{ type: 'CRM', name: '试菜反馈记录', desc: '沉淀客户口味反馈、照片素材和菜品适配度，用于后续方案与报价跟进。', owner: '销售 陈峰', status: '待确认' }],
+              next: { title: '用照片和反馈推进报价方案', items: ['把试菜照片、客户评价和参数调整写入试菜纪要。', '24 小时内输出门店方案，并推动报价和安装周期确认。'] }
+            }
+          },
+          {
+            role: 'sales',
+            name: '销售 陈峰',
+            time: '16:45',
+            text: '王总，今天反馈我都记下了。我们会把宫保鸡丁甜度参数调轻，再把试菜照片、三道菜参数和适合您门店的方案一起整理给您。',
+            log: ['销售确认反馈记录', 'AI 建议生成试菜纪要与轻方案', '流程：创建 24 小时内方案跟进任务'],
+            updates: {
+              tasks: [{ type: 'CRM', name: '24 小时方案跟进', desc: '生成试菜纪要、照片素材、三道菜参数建议和门店轻方案，24 小时内发客户。', owner: '销售 陈峰', status: '待确认' }],
+              next: { title: '24 小时内给出轻方案', items: ['把客户评价和照片转成试菜纪要，附同类门店案例。', '下一步推动报价和安装周期确认。'] },
+              reply: { by: '销售 陈峰', text: '王总，今天试菜反馈和照片已整理：小炒黄牛肉出品稳定、青椒肉丝快炒版速度好，宫保鸡丁甜味我们会调轻一档。明天上午我把三道菜的试菜纪要、参数建议、现场照片和适合您门店的初步方案发您，也同步给您看同类快餐门店的落地案例。' }
+            }
+          }
+        ]
+      }
+    ];
+
+    const roleMeta = {
+      customer: { avatar: '客', cls: 'customer', own: false },
+      sales: { avatar: '销', img: 'assets/avatars/sales-male.png', cls: 'sales', own: true },
+      business: { avatar: '商', img: 'assets/avatars/business-xinglan.png', cls: 'business', own: true },
+      service: { avatar: '售', cls: 'service', own: true },
+      chef: { avatar: '厨', img: 'assets/avatars/chef-liu.png', cls: 'chef', own: true },
+      ai: { avatar: 'AI', cls: 'ai', own: true }
+    };
+
+    const emptyText = {
+      install: '暂未从当前场景中识别安装时间、地点或设备型号。',
+      training: '暂未识别厨师培训对象、内容或排期。',
+      repair: '暂未识别机器报警、故障现象或维修优先级。',
+      parts: '暂未识别配件类型、数量或备货场景。',
+      dishes: '暂未识别试菜时间、菜品或口味偏好。',
+      feedback: '暂未识别客户对菜品、出品、效率或口味的评价。',
+      profile: '客户画像会随着群聊推进逐步补全。',
+      next: '等待更多上下文后生成下一步销售建议。'
+    };
+
+    const profileDefaults = {
+      'visit-tasting': {
+        person: { name: '王总', title: '杭州快餐品牌负责人', wechat: '企业微信已添加', avatar: '../shared/assets/avatars/customer-owner.png' },
+        business: [['业态', '连锁快餐'], ['总部', '杭州'], ['门店', '8 家门店'], ['常用菜', '小炒黄牛肉、青椒肉丝、宫保鸡丁']],
+        roles: [
+          { key: 'owner', label: '老板', name: '王总', focus: '参观效果、投资回报、落地周期', traits: ['关注高峰出餐', '重视口味稳定', '希望就近验证'] },
+          { key: 'chef', label: '总厨', name: '门店厨师长', focus: '菜品参数、食材适配、口味微调', traits: ['会自带核心食材', '关注快炒速度', '愿意做 AB 对比'] },
+          { key: 'buyer', label: '采购', name: '采购/运营', focus: '设备配置、安装周期、后续服务', traits: ['需要地址清晰', '关注备料范围', '保存试菜照片'] }
+        ]
+      },
+      'after-sales': {
+        person: { name: '王总', title: '上海新店负责人', wechat: '企业微信服务群', avatar: '../shared/assets/avatars/customer-owner.png' },
+        business: [['业态', '连锁快餐'], ['总部', '上海'], ['门店', '新店筹备中'], ['常用菜', '高峰快炒菜、套餐出品']],
+        roles: [
+          { key: 'owner', label: '老板', name: '王总', focus: '开业时间、安装培训、售后响应', traits: ['月底开业', '关注交付风险', '主动备配件'] },
+          { key: 'chef', label: '总厨', name: '新店厨师长', focus: '培训菜品、设备上手、出餐稳定', traits: ['新员工多', '需要标准化培训', '关注高峰菜'] },
+          { key: 'buyer', label: '采购', name: '门店行政', focus: '配件清单、库存、报价确认', traits: ['关注常用配件', '需要库存同步', '重视确认单'] }
+        ]
+      }
+    };
+
+    const state = {
+      scenarioIndex: 0,
+      messageIndex: 0,
+      playing: true,
+      timer: null,
+      data: {},
+      tasks: [],
+      logs: [],
+      reply: null,
+      sentReplyKey: '',
+      profileRole: ''
+    };
+
+    const els = {
+      tabs: document.getElementById('scenarioTabs'),
+      messages: document.getElementById('messages'),
+      groupTitle: document.getElementById('groupTitle'),
+      groupCount: document.getElementById('groupCount'),
+      chatPanelTitle: document.getElementById('chatPanelTitle'),
+      chatPanelSubtitle: document.getElementById('chatPanelSubtitle'),
+      aiSubtitle: document.getElementById('aiSubtitle'),
+      progressFill: document.getElementById('progressFill'),
+      progressText: document.getElementById('progressText'),
+      resetBtn: document.getElementById('resetBtn'),
+      stepBtn: document.getElementById('stepBtn'),
+      playBtn: document.getElementById('playBtn'),
+      taskList: document.getElementById('taskList'),
+      taskStatus: document.getElementById('taskStatus'),
+      replyBox: document.getElementById('replyBox'),
+      replyStatus: document.getElementById('replyStatus'),
+      agentLog: document.getElementById('agentLog'),
+      toast: document.getElementById('toast')
+    };
+
+    function init() {
+      applyEmbedMode();
+      renderTabs();
+      bindEvents();
+      loadScenario(getInitialScenarioIndex());
+      createIcons();
+    }
+
+    function applyEmbedMode() {
+      const params = new URLSearchParams(window.location.search);
+      const embedded = params.get('embed') === '1';
+      if (!embedded) return;
+      document.body.classList.add('embed-mode');
+      document.querySelectorAll('.global-scene-tabs a').forEach((link) => {
+        const url = new URL(link.getAttribute('href'), window.location.href);
+        url.searchParams.set('embed', '1');
+        link.setAttribute('href', url.pathname.split('/vendor/ai-sale/')[1] ? '../' + url.pathname.split('/vendor/ai-sale/')[1] + url.search : url.href);
+      });
+    }
+
+    function getInitialScenarioIndex() {
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get('scenario') || 'visit-tasting';
+      const index = scenarios.findIndex(scenario => scenario.id === requested);
+      return index >= 0 ? index : 1;
+    }
+
+    function createIcons() {
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderTabs() {
+      els.tabs.innerHTML = scenarios.map((scenario, index) => `
+        <button class="stage-tab ${index === state.scenarioIndex ? 'active' : ''}" style="--tab-color:${scenario.color}" data-index="${index}">
+          <span class="stage-tab-num">${scenario.tab}</span>
+          <span class="stage-tab-name">${scenario.tabName}</span>
+        </button>
+      `).join('');
+      createIcons();
+    }
+
+    function bindEvents() {
+      els.tabs.addEventListener('click', (event) => {
+        const tab = event.target.closest('.stage-tab');
+        if (!tab) return;
+        loadScenario(Number(tab.dataset.index));
+      });
+      els.resetBtn.addEventListener('click', () => loadScenario(state.scenarioIndex));
+      els.stepBtn.addEventListener('click', () => {
+        pause();
+        step();
+      });
+      els.playBtn.addEventListener('click', () => {
+        if (state.playing) pause();
+        else play();
+      });
+    }
+
+    function loadScenario(index) {
+      clearInterval(state.timer);
+      state.scenarioIndex = index;
+      state.messageIndex = 0;
+      state.playing = true;
+      state.data = {};
+      state.tasks = [];
+      state.logs = [];
+      state.reply = null;
+      state.sentReplyKey = '';
+      state.profileRole = '';
+      els.messages.innerHTML = '';
+      els.agentLog.innerHTML = '<div class="empty-copy">等待第一条群聊消息...</div>';
+      renderTabs();
+
+      const scenario = scenarios[index];
+      els.groupTitle.textContent = scenario.group;
+      els.groupCount.textContent = scenario.count;
+      els.chatPanelTitle.textContent = scenario.title;
+      els.chatPanelSubtitle.textContent = scenario.subtitle;
+      els.aiSubtitle.textContent = '正在监听 ' + scenario.group;
+
+      renderAllCards();
+      renderTasks();
+      renderReply();
+      updateProgress();
+      updatePlayButton();
+      step();
+      schedule();
+      createIcons();
+    }
+
+    function schedule() {
+      clearInterval(state.timer);
+      if (!state.playing) return;
+      state.timer = setInterval(() => {
+        const hasMore = step();
+        if (!hasMore) pause();
+      }, 1700);
+    }
+
+    function play() {
+      state.playing = true;
+      updatePlayButton();
+      schedule();
+    }
+
+    function pause() {
+      state.playing = false;
+      clearInterval(state.timer);
+      updatePlayButton();
+    }
+
+    function updatePlayButton() {
+      const icon = state.playing ? 'pause' : 'play';
+      const text = state.playing ? '暂停' : '播放';
+      els.playBtn.innerHTML = `<i data-lucide="${icon}"></i><span>${text}</span>`;
+      createIcons();
+    }
+
+    function step() {
+      const scenario = scenarios[state.scenarioIndex];
+      if (state.messageIndex >= scenario.messages.length) return false;
+
+      const msg = scenario.messages[state.messageIndex];
+      const row = addMessage(msg);
+      applyUpdates(msg);
+      state.messageIndex += 1;
+      updateProgress();
+      triggerExtraction(row, msg);
+      return state.messageIndex < scenario.messages.length;
+    }
+
+    function addMessage(msg) {
+      const meta = roleMeta[msg.role] || roleMeta.customer;
+      const row = document.createElement('div');
+      row.className = 'message-row' + (meta.own ? ' own' : '');
+      const avatar = `<div class="avatar ${meta.cls}">${meta.img ? `<img src="${escapeHtml(meta.img)}" alt="${escapeHtml(meta.avatar)}">` : escapeHtml(meta.avatar)}</div>`;
+      const bubble = `
+        <div class="bubble-wrap">
+          <div class="sender-line"><span>${escapeHtml(msg.name)}</span><time>${escapeHtml(msg.time)}</time></div>
+          ${renderMessageContent(msg)}
+        </div>
+      `;
+      row.innerHTML = meta.own ? bubble + avatar : avatar + bubble;
+      els.messages.appendChild(row);
+      row.querySelectorAll('[data-nav-action]').forEach((btn) => {
+        btn.addEventListener('click', () => showToast('已模拟打开地图导航'));
+      });
+      els.messages.scrollTop = els.messages.scrollHeight;
+      return row;
+    }
+
+    function renderMessageContent(msg) {
+      if (msg.kind === 'map' && msg.map) {
+        return `
+          <div class="bubble">${escapeHtml(msg.text)}</div>
+          <div class="rich-card map-card">
+            <div class="rich-body">
+              <div class="map-preview"><span class="map-pin"></span></div>
+              <div class="map-info">
+                <div class="map-title">${escapeHtml(msg.map.title)}</div>
+                <div class="map-address">${escapeHtml(msg.map.address)}</div>
+                <button class="nav-action" type="button" data-nav-action><i data-lucide="navigation"></i>点击导航</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (msg.kind === 'appointment' && msg.appointment) {
+        return `
+          <div class="bubble">${escapeHtml(msg.text)}</div>
+          <div class="rich-card appointment-card">
+            <div class="rich-head"><i data-lucide="calendar-check"></i><span>${escapeHtml(msg.appointment.title)}</span></div>
+            <div class="rich-body">
+              ${(msg.appointment.rows || []).map(([label, value]) => `
+                <div class="rich-row ${String(value).length > 18 ? 'wide' : ''}">
+                  <label>${escapeHtml(label)}</label><span>${escapeHtml(value)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (msg.kind === 'photo' && msg.photo) {
+        return `
+          <div class="bubble">${escapeHtml(msg.text)}</div>
+          <div class="photo-card">
+            <img src="${escapeHtml(msg.photo.src)}" alt="${escapeHtml(msg.photo.caption || '试菜现场照片')}">
+            <div class="photo-caption">${escapeHtml(msg.photo.caption || '')}</div>
+          </div>
+        `;
+      }
+
+      return `<div class="bubble">${escapeHtml(msg.text)}</div>`;
+    }
+
+    function addAiReply(reply) {
+      const key = state.scenarioIndex + ':' + reply.text;
+      if (state.sentReplyKey === key) {
+        showToast('这条回复已经发送到群里');
+        return;
+      }
+      state.sentReplyKey = key;
+      const role = reply.by.includes('售后') ? 'service' : 'sales';
+      addMessage({
+        role,
+        name: reply.by,
+        time: currentTime(),
+        text: reply.text
+      });
+      showToast('已模拟由' + reply.by + '确认并发送');
+      els.replyStatus.textContent = '已发送';
+      els.replyStatus.className = 'status-tag detected';
+      renderReply();
+    }
+
+    function applyUpdates(msg) {
+      const updates = msg.updates || {};
+      ['install', 'training', 'repair', 'parts', 'dishes', 'feedback', 'profile', 'next'].forEach((key) => {
+        if (updates[key]) {
+          state.data[key] = mergeValue(state.data[key], updates[key]);
+          pulseCard(key);
+        }
+      });
+
+      if (updates.tasks) {
+        updates.tasks.forEach((task) => {
+          const existing = state.tasks.find(item => item.type === task.type && item.name === task.name);
+          if (existing) Object.assign(existing, task);
+          else state.tasks.push({ ...task });
+        });
+      }
+
+      if (updates.reply) state.reply = updates.reply;
+
+      if (msg.log) {
+        msg.log.forEach((line, idx) => {
+          state.logs.push({
+            title: idx === 0 ? 'Observe' : idx === 1 ? 'Reason' : 'Execute',
+            copy: line
+          });
+        });
+      }
+
+      renderAllCards();
+      renderTasks();
+      renderReply();
+      renderLogs();
+      createIcons();
+    }
+
+    function triggerExtraction(row, msg) {
+      const key = getExtractionKey(msg);
+      if (!key || !row) return;
+      const source = row.querySelector('.bubble, .rich-card, .photo-card');
+      const target = document.getElementById('card-' + key) || document.getElementById(key);
+      if (!source || !target) return;
+
+      const sourceRect = source.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const startX = sourceRect.right + 8;
+      const startY = sourceRect.top + sourceRect.height / 2;
+      const endX = targetRect.left + 16;
+      const width = endX - startX;
+      if (width < 48) return;
+
+      const beam = document.createElement('div');
+      beam.className = 'extraction-beam';
+      beam.style.setProperty('--beam-left', startX + 'px');
+      beam.style.setProperty('--beam-top', startY + 'px');
+      beam.style.setProperty('--beam-width', width + 'px');
+
+      const chip = document.createElement('div');
+      chip.className = 'extraction-chip';
+      chip.textContent = extractionLabel(key);
+      chip.style.setProperty('--chip-left', startX + 12 + 'px');
+      chip.style.setProperty('--chip-top', startY - 18 + 'px');
+      chip.style.setProperty('--chip-move', Math.max(34, width - 120) + 'px');
+
+      document.body.appendChild(beam);
+      document.body.appendChild(chip);
+      setTimeout(() => {
+        beam.remove();
+        chip.remove();
+      }, 980);
+    }
+
+    function getExtractionKey(msg) {
+      const updates = msg.updates || {};
+      const order = ['install', 'training', 'repair', 'parts', 'dishes', 'feedback', 'profile', 'next'];
+      for (const key of order) {
+        if (updates[key]) return key;
+      }
+      if (updates.tasks) return 'profile';
+      return '';
+    }
+
+    function extractionLabel(key) {
+      const labels = {
+        install: '抽取安装预约',
+        training: '抽取培训需求',
+        repair: '抽取维修工单',
+        parts: '抽取配件备货',
+        dishes: '抽取试菜菜品',
+        feedback: '抽取客户评价',
+        profile: '更新客户画像',
+        next: '生成销售建议'
+      };
+      return labels[key] || 'AI 抽取';
+    }
+
+    function mergeValue(oldValue, newValue) {
+      if (!oldValue) return { ...newValue };
+      return {
+        ...oldValue,
+        ...newValue,
+        fields: newValue.fields || oldValue.fields,
+        tags: newValue.tags || oldValue.tags,
+        items: newValue.items || oldValue.items
+      };
+    }
+
+    function renderAllCards() {
+      renderEventCard('install');
+      renderEventCard('training');
+      renderEventCard('repair');
+      renderEventCard('parts');
+      renderEventCard('dishes');
+      renderEventCard('feedback');
+      renderProfileCard();
+      renderNextCard();
+    }
+
+    function renderEventCard(key) {
+      const card = document.getElementById('card-' + key);
+      const data = state.data[key];
+      const status = card.querySelector('[data-status]');
+      const body = card.querySelector('[data-body]');
+      if (!data) {
+        status.textContent = '待识别';
+        status.className = 'status-tag';
+        body.innerHTML = `<div class="empty-copy">${emptyText[key]}</div>`;
+        return;
+      }
+      status.textContent = data.status || '已识别';
+      status.className = 'status-tag detected';
+      body.innerHTML = (data.fields || []).map(([label, value]) => `
+        <div class="field-row"><label>${escapeHtml(label)}</label><b>${escapeHtml(value)}</b></div>
+      `).join('');
+    }
+
+    function renderProfileCard() {
+      const card = document.getElementById('card-profile');
+      const data = state.data.profile;
+      const body = card.querySelector('[data-body]');
+      if (!data) {
+        body.innerHTML = `<div class="empty-copy">${emptyText.profile}</div>`;
+        return;
+      }
+      const scenario = scenarios[state.scenarioIndex];
+      const preset = profileDefaults[scenario.id] || profileDefaults['visit-tasting'];
+      const profile = {
+        ...preset,
+        ...data,
+        person: { ...preset.person, ...(data.person || {}) },
+        roles: data.roles || preset.roles,
+        business: data.business || preset.business
+      };
+      const roles = profile.roles || [];
+      if (!state.profileRole && roles.length) state.profileRole = roles[0].key;
+      const activeRole = roles.find(role => role.key === state.profileRole) || roles[0] || {};
+      const fields = (data.fields || []).slice(0, 3).map(([label, value]) => `
+        <div class="field-row"><label>${escapeHtml(label)}</label><b>${escapeHtml(value)}</b></div>
+      `).join('');
+      const tags = (data.tags || []).map((tag, idx) => {
+        const palette = ['blue', 'green', 'orange', 'purple', 'rose'][idx % 5];
+        return `<span class="chip ${palette}">${escapeHtml(tag)}</span>`;
+      }).join('');
+      const business = (profile.business || []).map(([label, value]) => `
+        <div class="business-tile"><label>${escapeHtml(label)}</label><b>${escapeHtml(value)}</b></div>
+      `).join('');
+      const roleTraits = (activeRole.traits || []).map((trait, idx) => {
+        const palette = ['blue', 'green', 'orange'][idx % 3];
+        return `<span class="chip ${palette}">${escapeHtml(trait)}</span>`;
+      }).join('');
+      body.innerHTML = `
+        <div class="profile-rich">
+          <div class="profile-person">
+            <div class="profile-photo"><img src="${escapeHtml(profile.person.avatar)}" alt="${escapeHtml(profile.person.name)}"></div>
+            <div class="profile-name">
+              <b>${escapeHtml(profile.person.name)}</b>
+              <span>${escapeHtml(profile.person.title)}</span>
+            </div>
+            <div class="profile-wechat">${escapeHtml(profile.person.wechat)}</div>
+            <div class="role-tabs">
+              ${roles.map(role => `<button class="role-tab ${role.key === state.profileRole ? 'active' : ''}" type="button" data-profile-role="${escapeHtml(role.key)}">${escapeHtml(role.label)}</button>`).join('')}
+            </div>
+          </div>
+          <div class="profile-detail">
+            <div class="role-detail">
+              <div class="role-detail-title">
+                <b>${escapeHtml(activeRole.label || '角色')} · ${escapeHtml(activeRole.name || '')}</b>
+                <span>${escapeHtml(activeRole.focus || '')}</span>
+              </div>
+              <div class="chips">${roleTraits}</div>
+            </div>
+            <div class="profile-section business-section">
+              <div class="profile-section-title">客户经营信息</div>
+              <div class="business-grid">${business}</div>
+            </div>
+            <div class="profile-section ai-section">
+              <div class="profile-section-title">AI 实时抽取</div>
+              ${fields}
+              <div class="chips">${tags}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      body.querySelectorAll('[data-profile-role]').forEach(button => {
+        button.addEventListener('click', event => {
+          state.profileRole = event.currentTarget.dataset.profileRole;
+          renderProfileCard();
+        });
+      });
+    }
+
+    function renderNextCard() {
+      const card = document.getElementById('card-next');
+      const status = card.querySelector('[data-status]');
+      const body = card.querySelector('[data-body]');
+      const data = state.data.next;
+      if (!data) {
+        status.textContent = '待生成';
+        status.className = 'status-tag';
+        body.innerHTML = `<div class="empty-copy">${emptyText.next}</div>`;
+        return;
+      }
+      status.textContent = '已生成';
+      status.className = 'status-tag detected';
+      body.innerHTML = `
+        <div class="field-row"><label>建议</label><b>${escapeHtml(data.title)}</b></div>
+        <div class="chips">${(data.items || []).map(item => `<span class="chip green">${escapeHtml(item)}</span>`).join('')}</div>
+      `;
+    }
+
+    function renderTasks() {
+      els.taskStatus.textContent = '草稿 ' + state.tasks.length;
+      els.taskStatus.className = state.tasks.length ? 'status-tag draft' : 'status-tag';
+      if (!state.tasks.length) {
+        els.taskList.innerHTML = '<div class="empty-copy">AI 会把群聊里的安装、培训、维修、配件、试菜和回访信号预创建为 OA / 工单 / CRM 任务。</div>';
+        return;
+      }
+      els.taskList.innerHTML = state.tasks.map((task, idx) => `
+        <div class="task-item">
+          <div class="task-top">
+            <div class="task-name"><i data-lucide="${taskIcon(task.type)}"></i><span>${escapeHtml(task.name)}</span></div>
+            <span class="status-tag draft">${escapeHtml(task.status || '待确认')}</span>
+          </div>
+          <div class="task-desc">${escapeHtml(task.desc)}</div>
+          <div class="task-meta">
+            <span class="mini-tag">${escapeHtml(task.type)}</span>
+            <span class="mini-tag">负责人：${escapeHtml(task.owner)}</span>
+          </div>
+          <button class="small-btn primary" type="button" data-task-confirm="${idx}"><i data-lucide="check"></i>确认创建</button>
+        </div>
+      `).join('');
+      els.taskList.querySelectorAll('[data-task-confirm]').forEach((btn) => {
+        btn.addEventListener('click', (event) => {
+          const index = Number(event.currentTarget.dataset.taskConfirm);
+          state.tasks[index].status = '已创建';
+          showToast(state.tasks[index].type + ' 任务已创建：' + state.tasks[index].name);
+          renderTasks();
+          createIcons();
+        });
+      });
+    }
+
+    function taskIcon(type) {
+      if (type === '工单') return 'wrench';
+      if (type === 'CRM') return 'badge-dollar-sign';
+      return 'clipboard-check';
+    }
+
+    function renderReply() {
+      if (!state.reply) {
+        els.replyStatus.textContent = '待生成';
+        els.replyStatus.className = 'status-tag';
+        els.replyBox.innerHTML = '<div class="empty-copy">当关键字段足够完整后，AI 会生成一条以销售或售后身份发送的回复草稿。</div>';
+        return;
+      }
+      const sent = state.sentReplyKey === state.scenarioIndex + ':' + state.reply.text;
+      els.replyStatus.textContent = sent ? '已发送' : '待确认';
+      els.replyStatus.className = sent ? 'status-tag detected' : 'status-tag draft';
+      els.replyBox.innerHTML = `
+        <div class="reply-box">
+          <div class="reply-text">${escapeHtml(state.reply.text)}</div>
+          <div class="reply-actions">
+            <span class="mini-tag">发送身份：${escapeHtml(state.reply.by)}</span>
+            <button class="small-btn primary" type="button" id="sendReplyBtn"><i data-lucide="send"></i>${sent ? '再次演示发送' : '确认发送'}</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('sendReplyBtn').addEventListener('click', () => addAiReply(state.reply));
+    }
+
+    function renderLogs() {
+      if (!state.logs.length) {
+        els.agentLog.innerHTML = '<div class="empty-copy">等待第一条群聊消息...</div>';
+        return;
+      }
+      els.agentLog.innerHTML = state.logs.slice(-12).map((log) => `
+        <div class="log-item">
+          <div class="log-title">${escapeHtml(log.title)}</div>
+          <div class="log-copy">${escapeHtml(log.copy)}</div>
+        </div>
+      `).join('');
+      els.agentLog.scrollTop = els.agentLog.scrollHeight;
+    }
+
+    function updateProgress() {
+      const total = scenarios[state.scenarioIndex].messages.length;
+      const current = Math.min(state.messageIndex, total);
+      els.progressText.textContent = current + ' / ' + total;
+      els.progressFill.style.width = total ? (current / total * 100) + '%' : '0%';
+    }
+
+    function pulseCard(key) {
+      const card = document.getElementById('card-' + key);
+      if (!card) return;
+      card.classList.remove('updated');
+      void card.offsetWidth;
+      card.classList.add('updated');
+      setTimeout(() => card.classList.remove('updated'), 650);
+    }
+
+    function showToast(text) {
+      els.toast.textContent = text;
+      els.toast.classList.add('is-visible');
+      setTimeout(() => els.toast.classList.remove('is-visible'), 1700);
+    }
+
+    function currentTime() {
+      const now = new Date();
+      return String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;')
+        .replaceAll('\n', '<br>');
+    }
+
+    init();
+  </script>
+</body>
+</html>
